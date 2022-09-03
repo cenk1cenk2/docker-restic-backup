@@ -1,10 +1,10 @@
+ARG RESTIC_VERSION
+
 FROM alpine:latest as rclone
 
 # Get rclone executable
 ADD https://downloads.rclone.org/rclone-current-linux-amd64.zip /
 RUN unzip rclone-current-linux-amd64.zip && mv rclone-*-linux-amd64/rclone /bin/rclone && chmod +x /bin/rclone
-
-ARG RESTIC_VERSION
 
 FROM restic/restic:${RESTIC_VERSION}
 
