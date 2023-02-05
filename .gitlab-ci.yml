@@ -5,7 +5,7 @@ stages:
 
 include:
   - project: devops/pipes
-    file: /templates/docker-build-dockerhub.gitlab-ci.yml
+    file: /templates/v2/docker-build-dockerhub.gitlab-ci.yml
 
   - project: devops/pipes
     file: /templates/update-docker-hub-readme.gitlab-ci.yml
@@ -20,6 +20,8 @@ variables:
     Restic backup server forked from the original.
 
 build-docker-image:
+  extends: .docker-build
+  stage: docker
   only:
     refs:
       - schedules
