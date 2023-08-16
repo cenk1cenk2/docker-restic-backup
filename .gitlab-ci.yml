@@ -11,7 +11,7 @@ include:
     file: /templates/update-docker-hub-readme.gitlab-ci.yml
 
 variables:
-  RESTIC_VERSION: 0.15.2
+  RESTIC_VERSION: 0.16.0
   DOCKER_IMAGE_NAME: cenk1cenk2/restic-backup
   DOCKERFILE_CONTEXT: .
   DOCKER_IMAGE_BUILD_ARGS: RESTIC_VERSION={{ .RESTIC_VERSION }}
