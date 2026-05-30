@@ -1,35 +1,53 @@
 ---
 stages:
-  - docker
+  - container
   - post
-
-include:
-  - project: devops/pipes
-    file: /templates/v2/docker-build-dockerhub.gitlab-ci.yml
-
-  - project: devops/pipes
-    file: /templates/update-docker-hub-readme.gitlab-ci.yml
 
 variables:
   RESTIC_VERSION: 0.17.3
-  DOCKER_IMAGE_NAME: cenk1cenk2/restic-backup
-  DOCKERFILE_CONTEXT: .
-  DOCKER_IMAGE_BUILD_ARGS: RESTIC_VERSION={{ .RESTIC_VERSION }}
-  DOCKER_IMAGE_TAGS: latest,{{ .RESTIC_VERSION }}
+  CONTAINER_IMAGE_NAME: cenk1cenk2/restic-backup
+  CONTAINER_FILE_CONTEXT: .
+  CONTAINER_IMAGE_BUILD_ARGS: |
+    RESTIC_VERSION: '{{ env "RESTIC_VERSION" }}'
+  CONTAINER_IMAGE_TAGS: |
+    latest
+    {{ env "RESTIC_VERSION" }}
   README_DESCRIPTION: |
     Restic backup server forked from the original.
 
-build-docker-image:
-  extends: .docker-build-dockerhub
-  stage: docker
-  only:
-    refs:
-      - schedules
-      - master
-      - tags
+include:
+  - project: devops/pipelines
+    ref: buildah@1.2.2
+    file:
+      - /buildah/build.gitlab-ci.yml
+      - /buildah/registry-dockerhub.gitlab-ci.yml
+
+  - project: devops/pipelines
+    ref: docker@1.1.0
+    file:
+      - /docker/update-docker-hub-readme.gitlab-ci.yml
+
+container-build:
+  extends: .container-build
+  stage: container
+  variables:
+    CONTAINER_FILE_NAME: Dockerfile
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: on_success
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: on_success
+    - if: $CI_COMMIT_TAG
+      when: on_success
+    - when: never
 
 update-docker-hub-readme:
-  only:
-    refs:
-      - master
-      - tags
+  stage: post
+  extends: .update-docker-hub-readme
+  dependencies: []
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: on_success
+    - if: $CI_COMMIT_TAG
+      when: on_success
+    - when: never
