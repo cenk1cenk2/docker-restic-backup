@@ -9,9 +9,7 @@ variables:
   CONTAINER_FILE_CONTEXT: .
   CONTAINER_IMAGE_BUILD_ARGS: |
     RESTIC_VERSION: '{{ env "RESTIC_VERSION" }}'
-  CONTAINER_IMAGE_TAGS: |
-    latest
-    {{ env "RESTIC_VERSION" }}
+  CONTAINER_IMAGE_TAGS: latest,{{ env "RESTIC_VERSION" }}
   README_DESCRIPTION: |
     Restic backup server forked from the original.
 
