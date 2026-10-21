@@ -15,6 +15,10 @@ variables:
 
 include:
   - project: devops/pipelines
+    ref: references@1.5.0
+    file: /references/workflow.gitlab-ci.yml
+
+  - project: devops/pipelines
     ref: buildah@2.3.0
     file:
       - /buildah/build.gitlab-ci.yml
